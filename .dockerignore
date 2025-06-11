@@ -1,8 +1,5 @@
 __pycache__/
 *.pyc
-*.pkl
-.env
-tests/
+.venv
 .vscode/
 .idea/
-
