@@ -192,3 +192,10 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+#  Dev Containers are a way to define a development environment using Docker.
+#  The `.devcontainer` directory contains configuration files for the development container.
+#  It is recommended to include this directory in version control to ensure that the development
+#  environment is reproducible across different machines.
+#  However, if you prefer to ignore it, you can uncomment the following line.
+.devcontainer/
