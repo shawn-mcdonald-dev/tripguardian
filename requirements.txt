@@ -7,6 +7,10 @@ scikit-learn
 pandas
 numpy
 
+# Jupyter Notebooks
+notebook
+ipykernel
+
 # Storage (for SQLite or future expansion)
 sqlalchemy
 pydantic

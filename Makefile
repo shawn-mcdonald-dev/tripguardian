@@ -34,4 +34,11 @@ rebuild: clean build
 # Build and run (local dev)
 start: build run
 
-.PHONY: build run stop logs test clean rebuild start
+dev: rebuild run test
+
+# for notebook experiments
+notebook:
+	docker run -it --rm -p 8888:8888 -v $(PWD):/app $(IMAGE_NAME) \
+	jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --notebook-dir=/app/notebooks
+
+.PHONY: build run stop logs test clean rebuild start dev notebook
