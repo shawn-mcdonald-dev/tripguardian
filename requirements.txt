@@ -1,0 +1,23 @@
+# FastAPI & Server
+fastapi
+uvicorn[standard]  # Includes performance extras like gunicorn and httptools
+
+# Data & ML
+scikit-learn
+pandas
+numpy
+
+# Storage (for SQLite or future expansion)
+sqlalchemy
+pydantic
+
+# HTTP client (optional, for APIs)
+httpx
+
+# Testing
+pytest
+pytest-asyncio
+httpx[http2]
+
+# Others
+python-multipart  # If handling form data in future
