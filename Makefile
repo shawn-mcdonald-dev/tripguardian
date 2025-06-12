@@ -1,25 +1,44 @@
-# Constants
+# Project constants
+IMAGE_NAME = tripguardian
+CONTAINER_NAME = tripguardian-container
 PORT = 8000
 
-# Run the app using uvicorn (inside the Dev Container)
+# Build Docker image
+build:
+	docker build -t $(IMAGE_NAME) .
+
+# Run the Docker container
 run:
-	uvicorn app.main:app --host 0.0.0.0 --port $(PORT)
+	docker run -d --rm -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
-# Run tests using pytest (inside the Dev Container)
+# Stop the running container
+stop:
+	docker stop $(CONTAINER_NAME)
+
+# View container logs
+logs:
+	docker logs -f $(CONTAINER_NAME)
+
+# Run tests using pytest (inside the container)
 test:
-	pytest
+	docker run --rm $(IMAGE_NAME) pytest
 
-# Reinstall dependencies (inside the Dev Container)
-install:
-	pip install --no-cache-dir -r requirements.txt
+# Clean up local containers/images (dangerous: don't run in prod)
+clean:
+	docker rm -f $(CONTAINER_NAME) 2>/dev/null || true
+	docker rmi $(IMAGE_NAME) 2>/dev/null || true
 
-# Rebuild requirements.txt from pipenv/poetry/etc. (optional)
-freeze:
-	pip freeze > requirements.txt
+# Rebuild from scratch
+rebuild: clean build
+
+# Build and run (local dev)
+start: build run
+
+dev: rebuild run test
 
 # for notebook experiments
 notebook:
 	docker run -it --rm -p 8888:8888 -v $(PWD):/app $(IMAGE_NAME) \
 	jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --notebook-dir=/app/notebooks
 
-.PHONY: run test install freeze notebook
+.PHONY: build run stop logs test clean rebuild start dev notebook
