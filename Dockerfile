@@ -18,8 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the app
 COPY . .
 
-# Expose port FastAPI will run on
-EXPOSE 8000
+# Expose ports for FastAPI & jupyter
+EXPOSE 8000 8888
 
 # Command to run app
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
