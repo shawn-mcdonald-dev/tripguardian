@@ -45,7 +45,7 @@ def analyze_disruption(data: DisruptionRequest):
 
 @app.post("/disruption_check")
 def assess_disruption(data: DisruptionRequest):
-    level = get_disruption_level(data.delay_mins)
+    level = get_disruption_level(data.flights[0].delay_mins)
     action = suggest_action(level)
     return {
         "disruption_level": level,
