@@ -11,6 +11,10 @@ build:
 run:
 	docker run -d --rm -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
+# Run the Docker container in debug mode (interactive terminal)
+run-debug:
+	docker run -it --rm -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
+
 # Stop the running container
 stop:
 	docker stop $(CONTAINER_NAME)
