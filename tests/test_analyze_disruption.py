@@ -17,7 +17,6 @@ class TestAnalyzeDisruption:
         assert response.status_code == 200
         assert response.json()["disruption_level"] == 1
 
-    '''
     def test_missing_trip_id_returns_400(self, client, valid_request_data):
         data = copy.deepcopy(valid_request_data)
         data["trip_id"] = ""
@@ -35,4 +34,3 @@ class TestAnalyzeDisruption:
         data["weather"] = {}
         response = client.post("/analyze_disruption", json=data)
         assert response.status_code == 400
-    '''
