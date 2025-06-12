@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from app.schemas import DisruptionRequest
+from app.logic import get_disruption_level, suggest_action
 
 app = FastAPI(
     title="TripGuardian API",
@@ -40,4 +41,13 @@ def analyze_disruption(data: DisruptionRequest):
         "status": "received",
         "disruption_level": "TBD",
         "suggested_action": "TBD"
+    }
+
+@app.post("/disruption_check")
+def assess_disruption(data: DisruptionRequest):
+    level = get_disruption_level(data.flights[0].delay_mins)
+    action = suggest_action(level)
+    return {
+        "disruption_level": level,
+        "suggested_action": action,
     }
