@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from app.schemas import DisruptionRequest
 from app.logic import get_disruption_level, suggest_action
+from app.services.flight_status import get_flight_status, get_sample_flight_status
 
 app = FastAPI(
     title="TripGuardian API",
@@ -16,6 +17,16 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         status_code=400,
         content={"detail": exc.errors(), "body": exc.body},
     )
+
+@app.get("/status")
+def flight_status(flight_number: str = Query(..., example="AA100"),
+                  flight_date: str = Query(..., example="2025-06-13")):
+    """
+    Check the real-time status of a flight.
+    """
+    # result = get_flight_status(flight_number, flight_date)
+    result = get_sample_flight_status(flight_number, flight_date)
+    return result
 
 @app.get("/")
 def root():
