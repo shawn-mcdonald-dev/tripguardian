@@ -41,4 +41,13 @@ notebook:
 	docker run -it --rm -p 8888:8888 -v $(PWD):/app $(IMAGE_NAME) \
 	jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --notebook-dir=/app/notebooks
 
-.PHONY: build run stop logs test clean rebuild start dev notebook
+# Run Streamlit frontend
+frontend:
+	docker run -it --rm -p 8501:8501 -v $(PWD):/app -w /app \
+	-e PYTHONPATH=/app \
+	--name tripguardian-frontend \
+	$(IMAGE_NAME) \
+	streamlit run app/frontend.py --server.address=0.0.0.0
+
+
+.PHONY: build run stop logs test clean rebuild start dev notebook frontend

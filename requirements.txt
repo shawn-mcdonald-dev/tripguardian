@@ -1,6 +1,7 @@
 # FastAPI & Server
 fastapi
 uvicorn[standard]  # Includes performance extras like gunicorn and httptools
+streamlit  # for front-end dashboard
 
 # Data & ML
 scikit-learn
