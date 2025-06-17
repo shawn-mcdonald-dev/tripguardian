@@ -6,30 +6,33 @@
 
 ## 🔍 Overview
 
-TripGuardian is an intelligent travel companion that proactively monitors your flight itinerary and helps you respond to real-time disruptions like delays, missed connections, and severe weather. Whether you're a digital nomad, business traveler, or just trying to get home on time—TripGuardian is your fallback plan, always.
+**TripGuardian** is a real-time travel disruption assistant. It listens for flight delays, cancellations, or extreme weather and recommends smart, actionable alternatives—such as rebooking, switching airlines, or nearby hotels—so you’re never left stranded.
 
 ---
 
-## 🎯 MVP Features
+## 🎯 Features
 
-- 🚦 Classify travel disruptions as **minor**, **major**, or **critical**
-- 🔁 Suggest actions: **wait**, **rebook**, **book hotel**, or **reroute**
-- 📡 Fetch and parse structured trip data (manual or from APIs)
-- 🔍 Use ML + rule-based recommendations
-- 📊 Offer API interface (via FastAPI)
+- 🛰️ **Real-Time Flight Monitoring** via APIs (AviationStack, OpenSky)
+- 🔁 **Rebooking Suggestions** across alliances and alternate airlines
+- 💰 **Optimized Alternatives** from flight search APIs like Travelpayouts
+- 🐳 Docker-ready for local and production deployment
 
 ---
 
-## 🛠️ Tech Stack
+## 📂 Project Structure
 
-| Layer | Tool |
-|-------|------|
-| Backend API | FastAPI |
-| ML/Inference | Scikit-learn, Pandas |
-| Data Store | CSV / SQLite (MVP) |
-| Containerization | Docker |
-| Tests | Pytest |
-| Future | MLflow, Cloud Deploy, Streamlit dashboard |
+```bash
+/tripguardian
+├── app/                # FastAPI app and business logic
+│   ├── main.py         # API routes
+│   ├── services/       # External API integrations
+│   └── models/         # Data models
+├── data/               # Sample flight data, cache
+├── tests/              # Unit tests
+├── docs/               # Architecture, onboarding, usage
+├── requirements.txt    # Python dependencies
+└── README.md           # You are here
+```
 
 ---
 
@@ -41,20 +44,3 @@ TripGuardian is an intelligent travel companion that proactively monitors your f
 4. **Response**: FastAPI returns the plan to the user, in real-time.
 
 ---
-
-## 🧪 Example Input (POST `/analyze_disruption`)
-
-```json
-{
-  "trip_id": "abc123",
-  "flights": [
-    {"from": "JFK", "to": "LHR", "delay_mins": 0},
-    {"from": "LHR", "to": "BER", "delay_mins": 95}
-  ],
-  "weather": {
-    "LHR": "Fog",
-    "BER": "Clear"
-  },
-  "current_location": "LHR"
-}
-
