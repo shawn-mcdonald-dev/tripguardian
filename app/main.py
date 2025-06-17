@@ -4,6 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from app.schemas import DisruptionRequest
 from app.logic import get_disruption_level, suggest_action
 from app.services.flight_status import get_flight_status, get_sample_flight_status
+from app.services.flight_search import get_alternative_flights
 
 app = FastAPI(
     title="TripGuardian API",
@@ -25,8 +26,40 @@ def flight_status(flight_number: str = Query(..., example="AA100"),
     Check the real-time status of a flight.
     """
     # result = get_flight_status(flight_number, flight_date)
-    result = get_sample_flight_status(flight_number, flight_date)
+    result = get_flight_status(flight_number, flight_date)
     return result
+
+@app.get("/rebook")
+def rebook_options(flight_number: str = Query(..., example="AA100"),
+                   flight_date: str = Query(..., example="2025-06-17")):
+    """
+    Combines flight status check with rebooking alternatives (if delayed or cancelled).
+    """
+    status = get_flight_status(flight_number, flight_date)
+
+    if "error" in status:
+        return {"status": status, "alternatives": []}
+
+    # Check if the flight is on time
+    if status["status"] not in ["cancelled", "incident", "diverted"]:
+        return {
+            "status": status,
+            "message": "Your flight is on time. No rebooking options necessary.",
+            "alternatives": []
+        }
+
+    # Use flight info for rebooking
+    origin = status["departure_airport"]
+    destination = status["arrival_airport"]
+    after_time = status["scheduled_departure"]  # ISO format
+
+    alt_flights = get_alternative_flights(origin, destination, after_time)
+
+    return {
+        "status": status,
+        "message": "Your flight is disrupted. Here are rebooking options.",
+        "alternatives": alt_flights
+    }
 
 @app.get("/")
 def root():

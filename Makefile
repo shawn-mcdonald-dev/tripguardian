@@ -9,7 +9,16 @@ build:
 
 # Run the Docker container
 run:
-	docker run -d --rm -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	docker run -d --rm -p $(PORT):$(PORT) \
+	-e AVIATIONSTACK_KEY="$(AVIATIONSTACK_KEY)" \
+	-e RAPIDAPI_KEY="$(RAPIDAPI_KEY)" \
+	--name $(CONTAINER_NAME) $(IMAGE_NAME)
+
+debug:
+	docker run -it --rm -p $(PORT):$(PORT) \
+	-e AVIATIONSTACK_KEY="$(AVIATIONSTACK_KEY)" \
+	-e RAPIDAPI_KEY="$(RAPIDAPI_KEY)" \
+	--name $(CONTAINER_NAME) $(IMAGE_NAME)
 
 # Stop the running container
 stop:

@@ -1,11 +1,8 @@
 import os
 import json
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
-
-AVIATIONSTACK_API_KEY = os.getenv("AVIATIONSTACK_API_KEY")
+AVIATIONSTACK_KEY = os.getenv("AVIATIONSTACK_KEY")
 BASE_URL = "http://api.aviationstack.com/v1/flights"
 
 
@@ -23,14 +20,22 @@ def get_flight_status(flight_number: str, flight_date: str) -> dict:
     airline_code = ''.join(filter(str.isalpha, flight_number))
     flight_no = ''.join(filter(str.isdigit, flight_number))
 
+    '''
     params = {
-        "access_key": AVIATIONSTACK_API_KEY,
+        "access_key": AVIATIONSTACK_KEY,
         "flight_iata": flight_number,
         "flight_date": flight_date
     }
+    '''
+    params = {
+        "access_key": AVIATIONSTACK_KEY,
+        "flight_iata": flight_number
+    }
 
     try:
+        #print(f"DEBUG request params: {params}")
         response = requests.get(BASE_URL, params=params)
+        print("Requesting:", response.url)
         response.raise_for_status()
         data = response.json()
 
