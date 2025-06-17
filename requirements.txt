@@ -1,6 +1,8 @@
 # FastAPI & Server
 fastapi
 uvicorn[standard]  # Includes performance extras like gunicorn and httptools
+requests # For API requests
+python-dotenv  # For API key management
 
 # Data & ML
 scikit-learn
