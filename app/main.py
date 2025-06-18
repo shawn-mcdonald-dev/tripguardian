@@ -5,6 +5,7 @@ from app.schemas import DisruptionRequest
 from app.logic import get_disruption_level, suggest_action
 from app.services.flight_status import get_flight_status, get_sample_flight_status
 from app.services.flight_search import get_alternative_flights
+from app.services.opensky_client import OpenSkyClient
 
 app = FastAPI(
     title="TripGuardian API",
@@ -20,18 +21,38 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 @app.get("/status")
-def flight_status(flight_number: str = Query(..., example="AA100"),
-                  flight_date: str = Query(..., example="2025-06-13")):
+def flight_status(flight_number: str = Query(..., examples="AA100")):
     """
     Check the real-time status of a flight.
     """
-    # result = get_flight_status(flight_number, flight_date)
-    result = get_flight_status(flight_number, flight_date)
-    return result
+    client = OpenSkyClient()  # No auth needed for this endpoint
+    flight = client.find_flight_by_callsign(flight_number)
+    if flight:
+        return {
+            "icao24": flight.icao24,
+            "callsign": flight.callsign,
+            "origin_country": flight.origin_country,
+            "time_position": flight.time_position,
+            "last_contact": flight.last_contact,
+            "longitude": flight.longitude,
+            "latitude": flight.latitude,
+            "baro_altitude": flight.baro_altitude,
+            "on_ground": flight.on_ground,
+            "velocity": flight.velocity,
+            "true_track": flight.true_track,
+            "vertical_rate": flight.vertical_rate,
+            "sensors": flight.sensors,
+            "geo_altitude": flight.geo_altitude,
+            "squawk": flight.squawk,
+            "spi": flight.spi,
+            "position_source": flight.position_source
+        }
+    else:
+        print("Flight not found.")
 
 @app.get("/rebook")
-def rebook_options(flight_number: str = Query(..., example="AA100"),
-                   flight_date: str = Query(..., example="2025-06-17")):
+def rebook_options(flight_number: str = Query(..., examples="AA100"),
+                   flight_date: str = Query(..., examples="2025-06-17")):
     """
     Combines flight status check with rebooking alternatives (if delayed or cancelled).
     """
