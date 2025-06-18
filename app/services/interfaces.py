@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from app.services.models import OpenSkyResponse, AircraftState
+from app.schemas.models import OpenSkyResponse, AircraftState
 
 class IAirTrafficClient(ABC):
     """

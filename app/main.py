@@ -1,118 +1,29 @@
-from fastapi import FastAPI, Query, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from app.schemas import DisruptionRequest
-from app.logic import get_disruption_level, suggest_action
-from app.services.flight_status import get_flight_status, get_sample_flight_status
-from app.services.flight_search import get_alternative_flights
-from app.services.opensky_client import OpenSkyClient
+from fastapi.responses import JSONResponse
+from app.api.v1.routes import router as v1_router
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="TripGuardian API",
-    description="API that detects real-time disruptions and proactively recommends actions to travelers.",
+    description="Detects real-time disruptions and proactively recommends actions to travelers.",
     version="1.0.0"
 )
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.warning(f"Validation error: {exc.errors()}")
     return JSONResponse(
         status_code=400,
         content={"detail": exc.errors(), "body": exc.body},
     )
 
-@app.get("/status")
-def flight_status(flight_number: str = Query(..., examples="AA100")):
-    """
-    Check the real-time status of a flight.
-    """
-    client = OpenSkyClient()  # No auth needed for this endpoint
-    flight = client.find_flight_by_callsign(flight_number)
-    if flight:
-        return {
-            "icao24": flight.icao24,
-            "callsign": flight.callsign,
-            "origin_country": flight.origin_country,
-            "time_position": flight.time_position,
-            "last_contact": flight.last_contact,
-            "longitude": flight.longitude,
-            "latitude": flight.latitude,
-            "baro_altitude": flight.baro_altitude,
-            "on_ground": flight.on_ground,
-            "velocity": flight.velocity,
-            "true_track": flight.true_track,
-            "vertical_rate": flight.vertical_rate,
-            "sensors": flight.sensors,
-            "geo_altitude": flight.geo_altitude,
-            "squawk": flight.squawk,
-            "spi": flight.spi,
-            "position_source": flight.position_source
-        }
-    else:
-        print("Flight not found.")
-
-@app.get("/rebook")
-def rebook_options(flight_number: str = Query(..., examples="AA100"),
-                   flight_date: str = Query(..., examples="2025-06-17")):
-    """
-    Combines flight status check with rebooking alternatives (if delayed or cancelled).
-    """
-    status = get_flight_status(flight_number, flight_date)
-
-    if "error" in status:
-        return {"status": status, "alternatives": []}
-
-    # Check if the flight is on time
-    if status["status"] not in ["cancelled", "incident", "diverted"]:
-        return {
-            "status": status,
-            "message": "Your flight is on time. No rebooking options necessary.",
-            "alternatives": []
-        }
-
-    # Use flight info for rebooking
-    origin = status["departure_airport"]
-    destination = status["arrival_airport"]
-    after_time = status["scheduled_departure"]  # ISO format
-
-    alt_flights = get_alternative_flights(origin, destination, after_time)
-
-    return {
-        "status": status,
-        "message": "Your flight is disrupted. Here are rebooking options.",
-        "alternatives": alt_flights
-    }
+# API routes
+app.include_router(v1_router, prefix="/v1")
 
 @app.get("/")
 def root():
     return {"message": "TripGuardian is running!"}
-
-@app.post(
-    "/analyze_disruption",
-    response_model=dict,
-    summary="Analyze travel disruptions",
-    response_description="Analysis of the submitted disruption data"
-)
-def analyze_disruption(data: DisruptionRequest):
-    """
-    Analyze a travel disruption based on submitted itinerary, delays, and weather.
-
-    - **trip_id**: Unique trip identifier
-    - **flights**: List of flight legs (from, to, delay_mins)
-    - **weather**: Mapping of airport code to weather condition
-    - **current_location**: Current airport code
-    """
-    return {
-        "trip_id": data.trip_id,
-        "status": "received",
-        "disruption_level": "TBD",
-        "suggested_action": "TBD"
-    }
-
-@app.post("/disruption_check")
-def assess_disruption(data: DisruptionRequest):
-    level = get_disruption_level(data.flights[0].delay_mins)
-    action = suggest_action(level)
-    return {
-        "disruption_level": level,
-        "suggested_action": action,
-    }

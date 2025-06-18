@@ -1,7 +1,7 @@
 import logging
 from typing import Optional, List
 import httpx
-from app.services.models import AircraftState, OpenSkyResponse
+from app.schemas.models import AircraftState, OpenSkyResponse
 from app.services.interfaces import IAirTrafficClient
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,6 @@ class OpenSkyClient(IAirTrafficClient):
             response = self.client.get(url, auth=self.auth)
             response.raise_for_status()
             data = response.json()
-            logger.info(f"Data: {data.get('states', [])[1]}")
 
             states = [self._parse_state(s) for s in data.get("states", [])]
             states = [s for s in states if s is not None]
