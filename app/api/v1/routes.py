@@ -3,7 +3,9 @@ from app.services.flight_status import get_flight_status
 from app.services.flight_search import get_alternative_flights
 from app.services.opensky_client import OpenSkyClient
 from app.langchain.chains.reroute_chain import suggest_reroute
+from app.langchain.config import get_llm
 from app.schemas.llm_models import RerouteRequest, RerouteResponse
+from langchain.chat_models.base import BaseChatModel
 import logging
 
 router = APIRouter()
@@ -26,12 +28,16 @@ def flight_status(
 
     return flight.model_dump()
 
-@router.post("/reroute")
-def reroute_advice(request: RerouteRequest):
+@router.post("/reroute", response_model=RerouteResponse)
+def reroute_advice(
+    request: RerouteRequest,
+    llm: BaseChatModel = Depends(get_llm)
+):
     try:
-        result = suggest_reroute(request.model_dump())
-        return {"suggestion": result}
+        suggestion = suggest_reroute(request.model_dump(), llm=llm)
+        return {"suggestion": suggestion}
     except Exception as e:
+        logger.exception("Error in reroute_advice")
         raise HTTPException(status_code=500, detail=str(e))
 
 '''

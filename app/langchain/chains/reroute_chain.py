@@ -1,6 +1,6 @@
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
-from app.langchain.config import llm
+from langchain.chat_models.base import BaseChatModel
 
 system_msg = """
 You are TripGuardian, a helpful travel disruption assistant.
@@ -19,16 +19,8 @@ If the disruption is severe, suggest rebooking or a nearby hotel. If not, explai
 Be friendly but direct. Offer 1-2 options.
 """
 
-# Define the prompt template
-template = ChatPromptTemplate.from_messages([
-    ("system", system_msg),
-    ("human", "Please help the user decide the best next step.")
-])
 
-# Build a chain: prompt -> llm
-reroute_chain: Runnable = template | llm
-
-def suggest_reroute(data: dict) -> str:
+def suggest_reroute(data: dict, llm: BaseChatModel) -> str:
     """
     Run the reroute chain with user input.
 
@@ -43,6 +35,17 @@ def suggest_reroute(data: dict) -> str:
     Returns:
         str: AI-generated recommendation
     """
+
+    # Define the prompt template
+    template = ChatPromptTemplate.from_messages([
+        ("system", system_msg),
+        ("human", "Please help the user decide the best next step.")
+    ])
+
+    # Build a chain: prompt -> llm
+    reroute_chain: Runnable = template | llm
+    
+    # Invoke OpenAI API for final response
     response = reroute_chain.invoke(data)
     return response.content.strip()
 
