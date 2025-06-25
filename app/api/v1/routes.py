@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from app.services.flight_status import get_flight_status
 from app.services.flight_search import get_alternative_flights
 from app.services.opensky_client import OpenSkyClient
+from app.langchain.chains.reroute_chain import suggest_reroute
+from app.schemas.llm_models import RerouteRequest, RerouteResponse
 import logging
 
 router = APIRouter()
@@ -23,6 +25,14 @@ def flight_status(
         raise HTTPException(status_code=404, detail="Flight not found")
 
     return flight.model_dump()
+
+@router.post("/reroute")
+def reroute_advice(request: RerouteRequest):
+    try:
+        result = suggest_reroute(request.model_dump())
+        return {"suggestion": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 '''
 @router.get("/rebook")
