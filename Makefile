@@ -1,55 +1,41 @@
-# Project constants
-IMAGE_NAME = tripguardian
-CONTAINER_NAME = tripguardian-container
-PORT = 8000
+# Constants
+PROJECT_NAME = tripguardian
+COMPOSE = docker compose
 
-# Build Docker image
+# Commands
+.PHONY: build up down restart logs frontend backend open-notebook notebook test shell clean
+
 build:
-	docker build -t $(IMAGE_NAME) .
+	$(COMPOSE) build
 
-# Run the Docker container
-run:
-	docker run -d --rm -p $(PORT):$(PORT) \
-	-e AVIATIONSTACK_KEY="$(AVIATIONSTACK_KEY)" \
-	-e RAPIDAPI_KEY="$(RAPIDAPI_KEY)" \
-	-e OPENAI_API_KEY="$(OPENAI_API_KEY)" \
-	--name $(CONTAINER_NAME) $(IMAGE_NAME)
+up:
+	$(COMPOSE) up --build -d
 
-debug:
-	docker run -it --rm -p $(PORT):$(PORT) \
-	-e AVIATIONSTACK_KEY="$(AVIATIONSTACK_KEY)" \
-	-e RAPIDAPI_KEY="$(RAPIDAPI_KEY)" \
-	-e OPENAI_API_KEY="$(OPENAI_API_KEY)" \
-	--name $(CONTAINER_NAME) $(IMAGE_NAME)
+down:
+	$(COMPOSE) down
 
-# Stop the running container
-stop:
-	docker stop $(CONTAINER_NAME)
+restart: down up
 
-# View container logs
 logs:
-	docker logs -f $(CONTAINER_NAME)
+	$(COMPOSE) logs -f
 
-# Run tests using pytest (inside the container)
-test:
-	docker run --rm $(IMAGE_NAME) pytest
+frontend:
+	xdg-open http://localhost:8501 || open http://localhost:8501
 
-# Clean up local containers/images (dangerous: don't run in prod)
-clean:
-	docker rm -f $(CONTAINER_NAME) 2>/dev/null || true
-	docker rmi $(IMAGE_NAME) 2>/dev/null || true
+backend:
+	xdg-open http://localhost:8000/docs || open http://localhost:8000/docs
 
-# Rebuild from scratch
-rebuild: clean build
+open-notebook:
+	xdg-open http://localhost:8888 || open http://localhost:8888
 
-# Build and run (local dev)
-start: build run
-
-dev: rebuild run test
-
-# for notebook experiments
 notebook:
-	docker run -it --rm -p 8888:8888 -v $(PWD):/app $(IMAGE_NAME) \
-	jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --notebook-dir=/app/notebooks
+	$(COMPOSE) up notebook
 
-.PHONY: build run stop logs test clean rebuild start dev notebook
+test:
+	$(COMPOSE) exec backend pytest
+
+shell:
+	$(COMPOSE) exec backend /bin/bash
+
+clean:
+	docker system prune -f

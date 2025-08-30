@@ -1,0 +1,47 @@
+services:
+  backend:
+    container_name: tripguardian-backend
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AVIATIONSTACK_KEY=${AVIATIONSTACK_KEY}
+      - RAPIDAPI_KEY=${RAPIDAPI_KEY}
+    networks:
+      - tripguardian-net
+
+  frontend:
+    container_name: tripguardian-frontend
+    build: .
+    command: streamlit run ui/streamlit_app.py --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONPATH=/app
+      - API_BASE_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - tripguardian-net
+    
+  notebook:
+    container_name: tripguardian-notebook
+    build: .
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/notebooks
+    environment:
+      - PYTHONPATH=/app
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - backend
+    networks:
+      - tripguardian-net
+
+
+networks:
+  tripguardian-net:

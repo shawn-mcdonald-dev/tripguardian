@@ -2,6 +2,7 @@
 python-dotenv  # For API key management
 fastapi
 uvicorn[standard]  # Includes performance extras like gunicorn and httptools
+streamlit  # for front-end dashboard
 requests # For API requests
 
 # Data & ML
