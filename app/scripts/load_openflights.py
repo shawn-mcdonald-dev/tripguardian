@@ -1,0 +1,1 @@
+# Bulk load from OpenFlights .dat data
