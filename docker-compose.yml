@@ -5,10 +5,13 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
+    depends_on:
+      - postgres
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - AVIATIONSTACK_KEY=${AVIATIONSTACK_KEY}
       - RAPIDAPI_KEY=${RAPIDAPI_KEY}
+      - POSTGRES_DATABASE_URL=postgresql://postgres:postgres@db:5432/tripguardian
     networks:
       - tripguardian-net
 
@@ -42,6 +45,23 @@ services:
     networks:
       - tripguardian-net
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: tripguardian-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tripguardian
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tripguardian-net
+    restart: always
+
+volumes:
+  postgres_data:
 
 networks:
   tripguardian-net:
