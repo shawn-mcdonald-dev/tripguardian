@@ -21,9 +21,10 @@ langchain-postgres
 notebook
 ipykernel
 
-# Storage (for SQLite or future expansion)
+# Storage
 sqlalchemy
 pydantic
+psycopg2-binary
 
 # HTTP client (optional, for APIs)
 httpx
