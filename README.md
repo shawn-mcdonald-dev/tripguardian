@@ -44,3 +44,16 @@
 4. **Response**: FastAPI returns the plan to the user, in real-time.
 
 ---
+
+## Getting Started
+
+1. **[Download Docker Desktop](https://www.docker.com/get-started/)**
+
+2. **Build and Run Dockerfile**
+```bash
+docker compose up --build -d
+```
+
+3. **View Application**
+Open Frontend: `http://localhost:8501`
+Open Backend: `http://localhost:8000`
