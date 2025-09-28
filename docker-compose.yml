@@ -8,10 +8,10 @@ services:
     depends_on:
       - postgres
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - AVIATIONSTACK_KEY=${AVIATIONSTACK_KEY}
-      - RAPIDAPI_KEY=${RAPIDAPI_KEY}
-      - POSTGRES_DATABASE_URL=postgresql://postgres:postgres@db:5432/tripguardian
+      - OPENAI_API_KEY: ${OPENAI_API_KEY}
+      - AVIATIONSTACK_KEY: ${AVIATIONSTACK_KEY}
+      - RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      - POSTGRES_DATABASE_URL: postgresql://postgres:postgres@db:5432/tripguardian
     networks:
       - tripguardian-net
 
@@ -22,24 +22,8 @@ services:
     ports:
       - "8501:8501"
     environment:
-      - PYTHONPATH=/app
-      - API_BASE_URL=http://backend:8000
-    depends_on:
-      - backend
-    networks:
-      - tripguardian-net
-    
-  notebook:
-    container_name: tripguardian-notebook
-    build: .
-    command: jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root
-    ports:
-      - "8888:8888"
-    volumes:
-      - ./notebooks:/notebooks
-    environment:
-      - PYTHONPATH=/app
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONPATH: /app
+      - API_BASE_URL: http://backend:8000
     depends_on:
       - backend
     networks:
@@ -51,9 +35,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=tripguardian
+      - POSTGRES_USER: $(POSTGRES_USER)
+      - POSTGRES_PASSWORD: $(POSTGRES_PASSWORD)
+      - POSTGRES_DB: $(POSTGRES_DB)
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
