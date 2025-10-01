@@ -199,3 +199,5 @@ cython_debug/
 #  environment is reproducible across different machines.
 #  However, if you prefer to ignore it, you can uncomment the following line.
 .devcontainer/
+
+docs
