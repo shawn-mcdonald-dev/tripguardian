@@ -34,15 +34,15 @@ with st.form("reroute_form"):
 
             try:
                 with st.spinner("Thinking..."):
-                    st.code(f"Sending POST to {API_URL} with: {payload}")
+                    #st.code(f"Sending POST to {API_URL} with: {payload}")
                     response = requests.post(API_URL, json=payload)
                     
-                    st.write(f"Status Code: {response.status_code}")
-                    st.write(f"Raw Response: {response.text}")
+                    #st.write(f"Status Code: {response.status_code}")
+                    #st.write(f"Raw Response: {response.text}")
 
                     if response.status_code == 200:
                         st.success("TripGuardian's Recommendation:")
-                        st.write(response.json()["recommendation"])
+                        st.write(response.json()["suggestion"])
                     else:
                         st.error(f"Backend returned error: {response.status_code}")
             except Exception as e:
