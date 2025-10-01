@@ -14,7 +14,7 @@ A user is experiencing a travel issue:
 
 Based on this, give a helpful, personalized recommendation for what the user should do next.
 
-If the disruption is severe, suggest rebooking or a nearby hotel. If not, explain why they should wait.
+If the disruption is severe, suggest rebooking or a nearby hotel. If the wait time is more than two hours, leverage public data on the surrounding area to offer resturaunt and entertainment recommendations. If not, explain why they should wait. Leverage public information on the airport services available when offering that they should wait.
 
 Be friendly but direct. Offer 1-2 options.
 """

@@ -50,3 +50,5 @@ Open Frontend (UI): `http://localhost:8501`
 Open Backend (API): `http://localhost:8000`
 
 Elijah Mangen
+Isaac McDonaldald
+Sam Persinger
