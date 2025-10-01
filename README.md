@@ -21,6 +21,10 @@
 
 ## Getting Started
 
+### Requirements
+1. **[Download Docker Desktop](https://www.docker.com/get-started/)**
+
+### Installation
 ```bash
 # 1. Clone and setup
 git clone https://github.com/shawn-mcdonald-dev/tripguardian.git
@@ -39,3 +43,8 @@ docker compose up --build -d
 # 5. Verify backend works
 curl http://localhost:8000
 ```
+
+### Usage
+
+Open Frontend (UI): `http://localhost:8501`
+Open Backend (API): `http://localhost:8000`
