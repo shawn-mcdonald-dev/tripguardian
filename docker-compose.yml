@@ -9,6 +9,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - AVIATIONSTACK_KEY=${AVIATIONSTACK_KEY}
       - RAPIDAPI_KEY=${RAPIDAPI_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     networks:
       - tripguardian-net
 

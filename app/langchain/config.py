@@ -1,17 +1,20 @@
-from langchain_openai import ChatOpenAI
+import os
 from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
 def get_llm() -> ChatOpenAI:
     """
-    Returns the configured LLM instance.
-    
-    This function allows for easy access to the LLM instance throughout the application.
-    It can be extended to include additional configuration or logging if needed.
-    
-    Returns:
-        ChatOpenAI: The configured LLM instance.
+    Returns a ChatOpenAI instance configured with OpenRouter.
     """
-    return ChatOpenAI(model="gpt-3.5-turbo", 
-                      temperature=0.7)
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        raise ValueError("OPENROUTER_API_KEY not set in environment")
+
+    return ChatOpenAI(
+        model="x-ai/grok-4-fast:free",
+        temperature=0.7,
+        openai_api_key=api_key,
+        openai_api_base="https://openrouter.ai/api/v1"
+    )
