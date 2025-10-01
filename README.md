@@ -48,3 +48,4 @@ curl http://localhost:8000
 
 Open Frontend (UI): `http://localhost:8501`
 Open Backend (API): `http://localhost:8000`
+Isaac McDonaldald
