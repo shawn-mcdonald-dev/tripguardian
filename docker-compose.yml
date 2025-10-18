@@ -12,6 +12,7 @@ services:
       - AVIATIONSTACK_KEY=${AVIATIONSTACK_KEY}
       - RAPIDAPI_KEY=${RAPIDAPI_KEY}
       - POSTGRES_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/tripguardian
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     networks:
       - tripguardian-net
 
