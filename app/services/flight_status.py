@@ -1,10 +1,22 @@
 import os
 import json
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
+
+# DOCS: https://docs.apilayer.com/aviationstack/docs/aviationstack-api-v-1-0-0#/default/getFlights
 AVIATIONSTACK_KEY = os.getenv("AVIATIONSTACK_KEY")
 BASE_URL = "http://api.aviationstack.com/v1/flights"
 
+def save_sample_data(data):
+    output_dir = os.path.join(
+        os.path.dirname(__file__),
+        "../../data/sample_aviation_stack_flight_status.json"
+    )
+    with open(output_dir, "w") as f:
+        json.dump(data, f, indent=4) # indent for pretty-printing
+        print(f"API response saved to {output_dir}")
 
 def get_flight_status(flight_number: str, flight_date: str) -> dict:
     """
@@ -29,8 +41,9 @@ def get_flight_status(flight_number: str, flight_date: str) -> dict:
     '''
     params = {
         "access_key": AVIATIONSTACK_KEY,
-        "flight_iata": flight_number
+        #"flight_iata": flight_number
     }
+    
 
     try:
         #print(f"DEBUG request params: {params}")
@@ -38,6 +51,9 @@ def get_flight_status(flight_number: str, flight_date: str) -> dict:
         print("Requesting:", response.url)
         response.raise_for_status()
         data = response.json()
+
+        # saves entire API response to store sample data
+        #save_sample_data(data)
 
         flights = data.get("data", [])
         if not flights:
@@ -97,3 +113,9 @@ def get_sample_flight_status(flight_number: str, flight_date: str) -> dict:
 
     except Exception as e:
         return {"error": str(e)}
+
+if __name__ == "__main__":
+    flight_num = "JIA5120"
+    flight_dt = "2025-11-19"
+    status = get_flight_status(flight_num, flight_dt)
+    print(status)
