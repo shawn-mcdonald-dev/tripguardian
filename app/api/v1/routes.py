@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from app.services.flight_status import get_flight_status
 from app.services.flight_search import get_alternative_flights
-from app.services.opensky_client import OpenSkyClient
 from app.langchain.chains.reroute_chain import suggest_reroute
 from app.langchain.config import get_llm
 from app.schemas.llm_models import RerouteRequest, RerouteResponse
@@ -10,23 +9,6 @@ import logging
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-def get_opensky_client() -> OpenSkyClient:
-    return OpenSkyClient()
-
-@router.get("/status")
-def flight_status(
-    flight_number: str = Query(..., examples="e.g. AA100"),
-    client: OpenSkyClient = Depends(get_opensky_client)
-):
-    """
-    Check the real-time status of a flight.
-    """
-    flight = client.find_flight_by_callsign(flight_number)
-    if not flight:
-        raise HTTPException(status_code=404, detail="Flight not found")
-
-    return flight.model_dump()
 
 @router.post("/reroute", response_model=RerouteResponse)
 def reroute_advice(
@@ -40,10 +22,9 @@ def reroute_advice(
         logger.exception("Error in reroute_advice")
         raise HTTPException(status_code=500, detail=str(e))
 
-'''
 @router.get("/rebook")
-def rebook_options(flight_number: str = Query(..., examples="AA100"),
-                   flight_date: str = Query(..., examples="2025-06-17")):
+def rebook_options(flight_number: str = Query(..., examples=["AA100"]),
+                   flight_date: str = Query(..., examples=["2025-06-17"])):
     """
     Combines flight status check with rebooking alternatives (if delayed or cancelled).
     """
@@ -72,4 +53,3 @@ def rebook_options(flight_number: str = Query(..., examples="AA100"),
         "message": "Your flight is disrupted. Here are rebooking options.",
         "alternatives": alt_flights
     }
-'''
